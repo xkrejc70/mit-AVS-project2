@@ -1,0 +1,3 @@
+C:/Users/jankr/Downloads/avs-proj02/out/build/x64-Debug/CMakeFiles/PMC.dir
+C:/Users/jankr/Downloads/avs-proj02/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/jankr/Downloads/avs-proj02/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir

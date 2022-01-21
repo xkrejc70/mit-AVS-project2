@@ -1,0 +1,84 @@
+Architektury Výpočetních Systémů (AVS 2021)
+Projekt č. 2 (PMC)
+Login: xkrejc70
+
+Úloha 1: Paralelizace původního řešení
+===============================================================================
+
+1) Kterou ze smyček (viz zadání) je vhodnější paralelizovat a co způsobuje 
+   neefektivitu paralelizaci té druhé?
+
+Efektivnější je paralizovat for cyklus v metodě marchCubes(). Důvodem je 
+skutečnost, že druhá metoda je zanořená a obecně je vhodnější paralelizovat 
+smyčky na vyšší úrovni. To bylo potvrzeno i následným testováním.
+
+2) Jaké plánování (rozdělení práce mezi vlákna) jste zvolili a proč? 
+   Jaký vliv má velikost "chunk" při dynamickém plánování (8, 16, 32, 64)?
+
+Zvolil jsem statické plánování s konstantní velikostí 32. Důvodem je poměrně 
+rovnoměrné rozložení práce napříč iteracemi a díky tomu nížší režie než 
+u dynamického plánování. Se snižovaním velikosti "chunk" při dynamickém 
+plánování se zvyšuje režie (jednotlivá vlákna dokončují práci rychle a je jim 
+potřeba přiřadit další).
+
+3) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
+Pomocí kritické sekce: #pragma omp critical(crit)
+
+Úloha 2: Paralelní průchod stromem
+===============================================================================
+
+1) Stručně popište použití OpenMP tasků ve vašem řešení.
+
+OpenMP tasky byly použity při rekurzivním rozgenerování potomků. To zajišťuje 
+nová funkce "generateOctree", která je volána z paralelní sekce a při každém 
+volání je právě vytvořen další task. Díky tomu mohou volná vlákna paralelně 
+zpracovávat další části výpočtu.
+
+2) Jakým způsobem jste realizovali sesbírání celkového počtu trojúhelníků?
+
+Obdobně jako v referenčním řešení. Proměnnou "totalTriangles" však bylo nutné 
+označit za sdílenou "shared(totalTriangles)", aby byla k dispozici pro všechna 
+vlákna při paralelním zpracování. Když rozgenerovaný blok spňuje podmínku 
+prázdnosti, tak již dále rozgenerováván není a neinkrementuje se ani celkový 
+počet trojúhelníků.
+
+3) Jaký vliv má na vaše řešení tzv. "cut-off"? Je vhodné vytvářet nový 
+   task pro každou krychli na nejnižší úrovni?
+
+Test cutoff
+
+4) Jakým způsobem zajišťujete ukládání trojúhelníků z několika vláken současně?
+
+Pomocí již zmíněné kritické sekce.
+
+Úloha 3: Grafy škálování všech řešení
+===============================================================================
+
+1) Stručně zhodnoťte efektivitu vytvořených řešení (na základě grafů škálování).
+
+2) V jakém případě (v závislosti na počtu bodů ve vstupním souboru a velikosti 
+   mřížky) bude vaše řešení 1. úlohy neefektivní? (pokud takový případ existuje)
+
+3) Je (nebo není) stromový algoritmus efektivnější z pohledu slabého škálování 
+   vzhledem ke vstupu?
+
+Úloha 4: Analýza využití jader pomocí VTune
+================================================================================
+
+1) Jaké bylo průměrné využití jader pro všechny tři implementace s omezením na 
+   18 vláken? Na kolik procent byly využity?
+   
+   ref:		2.8%
+   loop:	47.6%
+   tree:	43.8%
+
+2) Jaké bylo průměrné využití jader pro všechny tři implementace s využitím 
+   všech jader? Na kolik procent se podařilo využít obě CPU?
+   
+   ref:		2.8%
+   loop:	79.2%
+   tree:	67.9%
+
+3) Jaké jsou závěry z těchto měření?
+
